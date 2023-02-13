@@ -3,6 +3,7 @@ import json
 import sys
 from configparser import ConfigParser
 from urllib import parse, request, error
+# from pprint import pp
 
 BASE_WEATHER_API_URL = "http://api.openweathermap.org/data/2.5/weather"
 
@@ -25,7 +26,7 @@ def _get_api_key():
 def read_user_cli_args():
     """
     Handle user CLI interactions
-    
+
     "city" is an argument that will take 1 or more inputs separated by
     whitespace. Setting nargs to "+", users can pass city names that
     have more than 1 word
@@ -79,19 +80,21 @@ def get_weather_data(query_url):
 
     Args:
         query_url (str): URL formatted for OpenWeather's city name endpoint
-    
+
     response: make an HTTP GET request to the query_url parameter and saves the result as response
     data: extracts the data from response
-    
+
     Returns:
         dict: Weather information for a specific city
     """
     try:
         response = request.urlopen(query_url)
     except error.HTTPError as http_error:
-        if http_error.code == 401: #Unauthorized
-            sys.exit("Access denied. Check your API key.")  #sys module allow to exit the program without traceback
-        elif http_error.code == 404: #Not found
+        if http_error.code == 401:  # Unauthorized
+            sys.exit(
+                "Access denied. Check your API key."
+            )  # sys module allow to exit the program without traceback
+        elif http_error.code == 404:  # Not found
             sys.exit("Can't find weather data for this city.")
         else:
             sys.exit(f"Something went wrong...({http_error.code})")
@@ -107,5 +110,8 @@ if __name__ == "__main__":
     user_args = read_user_cli_args()
     query_url = build_weather_query(user_args.city, user_args.imperial)
     weather_data = get_weather_data(query_url)
-    print(weather_data)
-
+    print(
+        f"{weather_data['name']}: "
+        f"{weather_data['weather'][0]['description']} "
+        f"({weather_data['main']['temp']})"
+    )
