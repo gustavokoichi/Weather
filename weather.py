@@ -1,11 +1,13 @@
 import argparse
 import json
 import sys
+import style
 from configparser import ConfigParser
 from urllib import parse, request, error
-# from pprint import pp
+# from pprint import pp (It substitute print to well formatted tuple, list or dict)
 
 BASE_WEATHER_API_URL = "http://api.openweathermap.org/data/2.5/weather"
+
 
 # Starting a function with _ indicates that it should be non-public
 
@@ -111,8 +113,14 @@ def display_weather_info(weather_data, imperial=False):
     weather_description = weather_data["weather"][0]["description"]
     temperature = weather_data["main"]["temp"]
 
-    print(f"{city}", end="")
-    print(f"\t{weather_description.capitalize()}", end=" ")
+    style.change_color(style.REVERSE)
+    print(f"{city:^{style.PADDING}}", end="")
+    style.change_color(style.RESET)
+
+    style.change_color(style.RED)
+    print(f"\t{weather_description.capitalize():^{style.PADDING}}", end=" ")
+    style.change_color(style.RESET)
+
     print(f"({temperature}°{'F' if imperial else 'C'})")
 
 if __name__ == "__main__":
