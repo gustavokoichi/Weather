@@ -4,6 +4,7 @@ import sys
 import style
 from configparser import ConfigParser
 from urllib import parse, request, error
+
 # from pprint import pp (It substitute print to well formatted tuple, list or dict)
 
 BASE_WEATHER_API_URL = "http://api.openweathermap.org/data/2.5/weather"
@@ -126,33 +127,34 @@ def display_weather_info(weather_data, imperial=False):
     print(f"{city:^{style.PADDING}}", end="")
     style.change_color(style.RESET)
 
-    color = _select_weather_display_params(weather_id)
+    weather_symbol, color = _select_weather_display_params(weather_id)
 
     style.change_color(color)
-    print(f"\t{weather_description.capitalize():^{style.PADDING}}", end=" ")
+    print(f"\t{weather_symbol}", end=" ")
+    print(f"{weather_description.capitalize():^{style.PADDING}}", end=" ")
     style.change_color(style.RESET)
 
     print(f"({temperature}°{'F' if imperial else 'C'})")
 
+def _select_weather_display_params(weather_id):
+    if weather_id in THUNDERSTORM:
+        display_params = ("💥", style.RED)
+    elif weather_id in DRIZZLE:
+        display_params = ("💧", style.CYAN)
+    elif weather_id in RAIN:
+        display_params = ("💦", style.BLUE)
+    elif weather_id in SNOW:
+        display_params = ("⛄️", style.WHITE)
+    elif weather_id in ATMOSPHERE:
+        display_params = ("🌀", style.BLUE)
+    elif weather_id in CLEAR:
+        display_params = ("🔆", style.YELLOW)
+    elif weather_id in CLOUDY:
+        display_params = ("💨", style.WHITE)
+    else:  # In case the API adds new weather codes
+        display_params = ("🌈", style.RESET)
+    return display_params
 
-    def _select_weather_display_params(weather_id):
-        if weather_id in THUNDERSTORM:
-            color = style.RED
-        elif weather_id in DRIZZLE:
-            color = style.CYAN
-        elif weather_id in RAIN:
-            color = style.BLUE
-        elif weather_id in SNOW:
-            color = style.WHITE
-        elif weather_id in ATMOSPHERE:
-            color = style.BLUE
-        elif weather_id in CLEAR:
-            color = style.YELLOW
-        elif weather_id in CLOUDY:
-            color = style.WHITE
-        else:  # In case the API adds new weather codes
-            color = style.RESET
-        return color
 
 if __name__ == "__main__":
     user_args = read_user_cli_args()
